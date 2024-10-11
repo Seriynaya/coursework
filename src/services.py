@@ -23,8 +23,6 @@ def search_str(operations_list: list, str_search: str):
             return result
         elif str_search in info["Description"] or str_search in info["Category"]:
             result.append(info)
-        else:
-            return result
     logger.info("Данные по переданной строке сформированны")
     json_report_format = json.dumps(
         result,

@@ -8,7 +8,7 @@ from src.utils import card_info, currency, greetings, top_5_transactions
 from tests.confitest import test_df, currencies, answer_currencies
 
 def test_greetings():
-    """Тест вывода приветсвия в зависимости от текущего времени"""
+    """Тест вывода приветствия клиента в зависимости от текущего времени"""
     with freeze_time("2024-09-30 16:39:11"):
         assert greetings() == "Добрый день"
     with freeze_time("2024-09-30 08:39:11"):
@@ -38,23 +38,9 @@ def test_currency_with_incorrect_status_code(mock_get, currencies, answer_curren
 def test_card_info(test_df):
     """Тест корректности работы функции"""
     assert card_info("2021-12-31 16:44:00", test_df) == [
-        {"Transaction date": "31.12.2021 16:44:00",
-         "Payment date": "31.12.2021",
-         "Card number": "*7197",
-         "Status": "OK",
-         "Transaction currency": "RUB",
-         "Payment amount": -160.89,
-         "Payment currency": "RUB",
-         "Cashback": None,
-         "Category": "Супермаркеты",
-         "MCC": 5411,
-         "Description": "Колхоз",
-         "Bonuses (including cashback)": 3,
-         "Rounding to the investment bank": 0,
-         "The amount of the operation with rounding": 160.89
-         }
+        {"Card number": "5091", "Transaction amount": -1589.0, "Cashback": 15.89},
+        {"Card number": "7197", "Transaction amount": -344.33, "Cashback": 3.44},
     ]
-
 
 def test_card_info_incorrect_date_format(test_df):
     """Тест функции с некорректным форматом даты"""
