@@ -1,31 +1,18 @@
-import logging
-from datetime import datetime
-import datetime
+import json
 
-logger = logging.getLogger("views.log")
-file_handler = logging.FileHandler("views.log", "w")
-file_formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
-file_handler.setFormatter(file_formatter)
-logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+import pandas as pd
+from src.utils import (card_info, currency, greetings, prices,
+                       top_5_transactions)
 
 
-def filter_by_date(date: str, my_list: list) -> list:
-    """Функция фильтрующая данные по заданной дате"""
-    list_by_date = []
-    logger.info("Начало работы функции (filter_by_date)")
-    if date == "":
-        return list_by_date
-    year, month, day = int(date[0:4]), int(date[5:7]), int(date[8:10])
-    date_obj = datetime.datetime(year, month, day)
-    for i in my_list:
-        if i["Дата платежа"] == "nan" or type(i["Дата платежа"]) is float:
-            continue
-        elif (
-                date_obj
-                >= datetime.datetime.strptime(str(i["Дата платежа"]), "%d.%m.%Y")
-                >= date_obj - datetime.timedelta(days=day - 1)
-        ):
-            list_by_date.append(i)
-    logger.info("Конец работы функции (filter_by_date)")
-    return list_by_date
+def json_report(df: pd.DataFrame, date: str, user_settings):
+    """Функция выводящая результат запроса по дате в JSON-формате"""
+    transactions = {
+        "greeting": greetings(),
+        "cards": card_info(date, df),
+        "top 5 transactions": top_5_transactions(date, df),
+        "currency": currency(user_settings["user_currencies"]),
+        "prices": prices(user_settings["user_stocks"]),
+    }
+    json_report_format = json.dumps(transactions, indent=4, ensure_ascii=False)
+    return json_report_format
