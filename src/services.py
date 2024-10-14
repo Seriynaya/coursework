@@ -1,39 +1,33 @@
-import logging
+import datetime
 import json
-from src.decorators import decorator_search
+import logging
+import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log_path = os.path.join(BASE_DIR, "logs", "services.log")
 
-logger = logging.getLogger("services.log")
-file_handler = logging.FileHandler("services.log", "w")
-file_formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+logger = logging.getLogger("services")
+file_handler = logging.FileHandler(log_path, "w", encoding="utf-8")
+file_formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s: %(message)s")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 logger.setLevel(logging.INFO)
 
 
-
-@decorator_search
-def simple_search(my_list: list, string_search: str):
+def search_str(operations_list: list, str_search: str):
     """Функция поиска по переданной строке"""
     result = []
-    logger.info("Начало работы функции (simple_search)")
-    for i in my_list:
-        if string_search == '':
+    logger.info("Начало работы")
+    for info in operations_list:
+        if str_search == "":
             return result
-        elif (
-                i["Описание"] == "nan"
-                or type(i["Описание"]) is float
-                or i["Категория"] == "nan"
-                or type(i["Категория"]) is float
-        ):
-            continue
-        elif string_search in i["Описание"] or string_search in i["Категория"]:
-            result.append(i)
+        elif str_search in info["Description"] or str_search in info["Category"]:
+            result.append(info)
+    logger.info("Данные по переданной строке сформированны")
+    json_report_format = json.dumps(
+        result,
+        indent=4,
+        ensure_ascii=False,
+    )
 
-    logger.info("Конец работы функции (simple_search)")
-    data_json = json.dumps(result,
-                           indent=4,
-                           ensure_ascii=False,
-                           )
-
-    return data_json
+    return json_report_format
